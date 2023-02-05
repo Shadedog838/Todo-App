@@ -1,23 +1,28 @@
 import React, { Fragment, useState } from "react";
 
-export default function EditTodo({ todo }) {
-  const [description, setDescription] = useState(todo.description);
-
-  const updateDescription = async (e) => {
-    e.preventDefault();
+const EditTodo = ({ todo, setTodosChange }) => {
+  const editText = async id => {
     try {
       const body = { description };
-      const response = await fetch(`http://localhost:5000/todos/${todo.todo_id}`, {
+
+      const myHeaders = new Headers();
+
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("jwt_token", localStorage.token);
+
+      await fetch(`http://localhost:5000/dashboard/todos/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        headers: myHeaders,
+        body: JSON.stringify(body)
       });
 
-      window.location = "/";
+      setTodosChange(true);
     } catch (err) {
-      console.error(err.message);
+      console.error(err.messsge);
     }
   };
+
+  const [description, setDescription] = useState(todo.description);
   return (
     <Fragment>
       <button
@@ -30,14 +35,14 @@ export default function EditTodo({ todo }) {
       </button>
 
       <div
-        class="modal"
+        className="modal"
         id={`id${todo.todo_id}`}
         onClick={() => setDescription(todo.description)}
       >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Edit Todo</h4>
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Edit Todo</h4>
               <button
                 type="button"
                 className="close"
@@ -48,7 +53,7 @@ export default function EditTodo({ todo }) {
               </button>
             </div>
 
-            <div class="modal-body">
+            <div className="modal-body">
               <input
                 type="text"
                 className="form-control"
@@ -62,7 +67,7 @@ export default function EditTodo({ todo }) {
                 type="button"
                 class="btn btn-warning"
                 data-dismiss="modal"
-                onClick={(e) => updateDescription(e)}
+                onClick={(e) => editText(todo.todo_id)}
               >
                 Edit
               </button>
@@ -81,3 +86,5 @@ export default function EditTodo({ todo }) {
     </Fragment>
   );
 }
+
+export default EditTodo;

@@ -1,38 +1,31 @@
 import React, { Fragment, useEffect, useState } from "react";
-
 import EditTodo from "./EditTodo";
 
-export default function ListTodos() {
+const ListTodos = ({ allTodos, setTodosChange }) => {
   const [todos, setTodos] = useState([]);
 
-  const deleteTodo = async (id) => {
+  async function deleteTodo(id) {
     try {
-      const deleteTodo = await fetch(`http://localhost:5000/todos/${id}`, {
+      const deleteTodo = await fetch(`http://localhost:5000/dashboard/todos/${id}`, {
         method: "DELETE",
+        headers: { jwt_token: localStorage.token }
       });
-      console.log(deleteTodo);
+
       setTodos(todos.filter((todo) => todo.todo_id !== id));
     } catch (err) {
       console.log(err.message);
     }
   };
-  const getTodos = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/todos");
-      const jsonData = await response.json();
-      setTodos(jsonData);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
+
   useEffect(() => {
-    getTodos();
-  }, []);
+    setTodos(allTodos);
+  }, [allTodos]);
 
   console.log(todos);
   return (
     <Fragment>
-      <table className="table mt-5 text-center">
+      {" "}
+      <table className="table mt-5">
         <thead>
           <tr>
             <th>Description</th>
@@ -41,16 +34,11 @@ export default function ListTodos() {
           </tr>
         </thead>
         <tbody>
-          {/* <tr>
-            <td>John</td>
-            <td>Doe</td>
-            <td>john@example.com</td>
-          </tr> */}
-          {todos.map((todo) => (
+          {todos?.map((todo) => (
             <tr key={todo.todo_id}>
               <td>{todo.description}</td>
               <td>
-                <EditTodo todo = {todo} />
+                <EditTodo todo = {todo} setTodosChange = { setTodosChange } />
               </td>
               <td>
                 <button
@@ -67,3 +55,5 @@ export default function ListTodos() {
     </Fragment>
   );
 }
+
+export default ListTodos;

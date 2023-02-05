@@ -9,10 +9,8 @@ module.exports = function(req, res, next) {
     return res.status(403).json({msg: "authorization denied" });
   }
 
-
   try {
-    const verify = jwt.vertify(token, process.env.jwt);
-
+    const verify = jwt.verify(token, process.env.jwtSecret);
     req.user = verify.user;
     next();
   } catch (err) {
